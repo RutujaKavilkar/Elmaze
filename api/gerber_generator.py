@@ -8,6 +8,8 @@ PRECISION = "FSLAX24Y24"
 UNITS = "MOIN"  # Inches
 SCALE_FACTOR = 1000  # Coordinate scaling
 
+DEFAULT_TRACE_WIDTH = 0.010  # 10 mil (~0.25 mm)
+
 
 # =========================
 # Types
@@ -48,23 +50,27 @@ def write_gerber_file(filename: str, content: str, folder: Path) -> None:
 def generate_top_layer(
     pads: List[Point],
     traces: List[Trace],
-    folder: Path
+    folder: Path,
+    trace_width: float = DEFAULT_TRACE_WIDTH
 ) -> None:
     """Generate top copper layer (GTL)."""
 
     if not pads:
         raise ValueError("Pads list cannot be empty")
 
+    if trace_width <= 0:
+        raise ValueError("Trace width must be positive")
+
     content = f"""G04 Top Copper Layer*
 %{PRECISION}*%
 %{UNITS}*%
 G75*
 %ADD10C,0.062*%
-%ADD11C,0.030*%
+%ADD11C,{trace_width:.3f}*%
 G54D10*
 """
 
-    # Pads
+    # Pads (flash)
     for x, y in pads:
         content += f"{_format_coord(x, y)}D03*\n"
 
