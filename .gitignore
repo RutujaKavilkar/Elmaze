@@ -1,5 +1,6 @@
 # Generated Gerber files
 gerber_files/
+output/
 
 # Python
 __pycache__/
